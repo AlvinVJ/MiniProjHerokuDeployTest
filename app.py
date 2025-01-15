@@ -15,13 +15,19 @@ def upload_frame():
 @app.route('/stream')
 def stream_video():
     def generate():
-        global video_frame
         while True:
+            # Check if a frame is available
             if video_frame:
+                # Yield the current frame in MJPEG format
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + video_frame + b'\r\n')
+            else:
+                # If no frame is available, introduce a short delay
+                time.sleep(0.1)
+
     return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(port=10000)
